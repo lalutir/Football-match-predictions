@@ -7,24 +7,28 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.compose import ColumnTransformer
 import warnings
 import os
+import datetime
+
+# Create timestamp
+timestamp = str(datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S'))
 
 # Hide warnings
 warnings.filterwarnings('ignore')
 
 # Check if the files are present and not open
 try:
-    os.rename('Country statistics.xlsx', 'Country statistics.xlsx')
+    os.rename('Statistics/Country statistics.xlsx', 'Statistics/Country statistics.xlsx')
 except FileNotFoundError:
-    raise FileNotFoundError('Country statistics.xlsx not found. Please make sure the file is in the same directory as the script.')
+    raise FileNotFoundError('Country statistics.xlsx not found. Please make sure the file is in the correct directory.')
 except PermissionError:
     raise PermissionError('Country statistics.xlsx is currently open. Please close the file before running the script.')
 except Exception as e:
     raise Exception(e)
 
 try:
-    os.rename('Predictions.xlsx', 'Predictions.xlsx')
+    os.rename('Predictions/Predictions.xlsx', 'Predictions/Predictions.xlsx')
 except FileNotFoundError:
-    raise FileNotFoundError('Predictions.xlsx not found. Please make sure the file is in the same directory as the script.')
+    raise FileNotFoundError('Predictions.xlsx not found. Please make sure the file is in the correct directory.')
 except PermissionError:
     raise PermissionError('Predictions.xlsx is currently open. Please close the file before running the script.')
 except Exception as e:
@@ -34,9 +38,30 @@ except Exception as e:
 home_team = input("Enter the home team: ")
 away_team = input("Enter the away team: ")
 
+def find_last_created_file(directory):
+    try:
+        files = os.listdir(directory)
+    except OSError:
+        print(f"Error: Could not access directory '{directory}'")
+        return None
+    
+    if not files:
+        print(f"Directory '{directory}' is empty")
+        return None
+    
+    files = [os.path.join(directory, file) for file in files]
+    files.sort(key=os.path.getctime)
+    last_file = files[-1]
+    
+    return last_file
+
 # Load the data
-pred = pd.read_excel('Predictions.xlsx')
-rankings = pd.read_excel('Country statistics.xlsx', sheet_name='Rankings')
+directory_path = 'Predictions/'
+last_file = find_last_created_file(directory_path)
+pred = pd.read_excel(last_file)
+directory_path = 'Statistics/'
+last_file = find_last_created_file(directory_path)
+rankings = pd.read_excel(last_file, sheet_name='Rankings')
 teams = list(pred['Home'].unique()) + list(pred['Away'].unique())
 
 # Check if the game has already been played
@@ -49,8 +74,8 @@ elif away_team not in teams:
 elif list(pred[(pred['Home'] == home_team) & (pred['Away'] == away_team) & (pred['Predicted home goals'].isna()) & (pred['Predicted away goals'].isna())].index) == []:
     raise ValueError('This game has already been predicted or does not exist')
 
-df1 = pd.read_excel('Country statistics.xlsx', sheet_name=home_team).drop(['Index'], axis=1)
-df2 = pd.read_excel('Country statistics.xlsx', sheet_name=away_team).drop(['Index'], axis=1)
+df1 = pd.read_excel(last_file, sheet_name=home_team).drop(['Index'], axis=1)
+df2 = pd.read_excel(last_file, sheet_name=away_team).drop(['Index'], axis=1)
 
 # Ask for the amount of players in each position
 to_predict_home_defenders = int(input('Home defenders: '))
@@ -234,4 +259,4 @@ pred['Correct TOTO'] = cor_toto
 print(f'Predicted score: {home_team} {pred_home_goal} - {pred_away_goal} {away_team}')
 
 # Save the predictions
-pred.to_excel('Predictions.xlsx', index=False)
+pred.to_excel(f'Predictions/Predictions_{timestamp}.xlsx', index=False)
