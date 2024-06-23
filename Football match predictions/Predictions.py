@@ -127,15 +127,7 @@ df1 = pd.concat([df1, to_predict_home]).reset_index(drop=True)
 df2 = pd.concat([df2, to_predict_away]).reset_index(drop=True)
 
 # Create the pipeline
-preprocessor = ColumnTransformer(
-    transformers=[
-        ('num', StandardScaler(), ['Opponent ranking', 'Opponent ranking points'])
-    ],
-    remainder='passthrough'
-)
-
 pipeline = Pipeline([
-    ('preprocessor', preprocessor),
     ('regressor', RandomForestRegressor(random_state=42))
 ])
 
@@ -152,6 +144,13 @@ grid_search = GridSearchCV(
     scoring='neg_mean_squared_error',
     n_jobs=-1
 )
+
+# Scale the data
+scaler = StandardScaler()
+col_to_scale = ['Defenders', 'Midfielders', 'Attackers', 'Opponent ranking', 'Opponent ranking points', 'Opponent defenders', 'Opponent midfielders', 'Opponent attackers', 'Avg goals', 'Avg opponent goals']
+
+df1[col_to_scale] = scaler.fit_transform(df1[col_to_scale])
+df2[col_to_scale] = scaler.fit_transform(df2[col_to_scale])
 
 # Split the data
 X_1 = df1.drop(['Opponent', 'Goals', 'Opponent goals'], axis=1)
