@@ -1,22 +1,45 @@
 import pandas as pd
 import warnings
 import os
+import datetime
+
+# Create timestamp
+timestamp = str(datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S'))
 
 # Hide warnings
 warnings.filterwarnings('ignore')
 
 # Check if the files are present and not open
 try:
-    os.rename('Predictions.xlsx', 'Predictions.xlsx')
+    os.rename('/Predictions/Predictions.xlsx', '/Predictions/Predictions.xlsx')
 except FileNotFoundError:
-    raise FileNotFoundError('Predictions.xlsx not found. Please make sure the file is in the same directory as the script.')
+    raise FileNotFoundError('Predictions.xlsx not found. Please make sure the file is in the correct directory.')
 except PermissionError:
     raise PermissionError('Predictions.xlsx is currently open. Please close the file before running the script.')
 except Exception as e:
     raise Exception(e)
 
+def find_last_created_file(directory):
+    try:
+        files = os.listdir(directory)
+    except OSError:
+        print(f"Error: Could not access directory '{directory}'")
+        return None
+    
+    if not files:
+        print(f"Directory '{directory}' is empty")
+        return None
+    
+    files = [os.path.join(directory, file) for file in files]
+    files.sort(key=os.path.getctime)
+    last_file = files[-1]
+    
+    return last_file
+
 # Load the data
-pred = pd.read_excel('Predictions.xlsx')
+directory_path = 'Predictions/'
+last_file = find_last_created_file(directory_path)
+pred = pd.read_excel(last_file)
 
 # Choose the home and away team
 home_team = input("Enter the home team: ")
@@ -79,5 +102,5 @@ pred['Actual TOTO'] = act_toto
 pred['Correct score'] = cor_score
 pred['Correct TOTO'] = cor_toto
 
-# Save the predictions
-pred.to_excel('Predictions.xlsx', index=False)
+# Save the scores
+pred.to_excel(f'Predictions/Predictions_{timestamp}.xlsx', index=False)
