@@ -141,10 +141,7 @@ pipeline = Pipeline([
 
 # Define the hyperparameters
 param_grid = {
-    'regressor__n_estimators': [100, 200],
-    'regressor__max_depth': [None, 10, 20],
-    'regressor__min_samples_split': [2, 5, 10],
-    'regressor__min_samples_leaf': [1, 2, 4]
+    'regressor__n_estimators': range(0, 1001, 100)
 }
 
 # Perform the grid search
