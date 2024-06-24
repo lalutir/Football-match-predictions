@@ -11,7 +11,7 @@ warnings.filterwarnings('ignore')
 
 # Check if the files are present and not open
 try:
-    os.rename('/Predictions/Predictions.xlsx', '/Predictions/Predictions.xlsx')
+    os.rename('Predictions/Predictions.xlsx', 'Predictions/Predictions.xlsx')
 except FileNotFoundError:
     raise FileNotFoundError('Predictions.xlsx not found. Please make sure the file is in the correct directory.')
 except PermissionError:
