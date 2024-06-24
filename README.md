@@ -6,6 +6,7 @@ Welcome to the Football Match Scoreline Predictor! This project aims to predict 
 
 - [Introduction](#introduction)
 - [Features](#features)
+- [Versioning](#versioning)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Contributing](#contributing)
@@ -24,6 +25,10 @@ Predicting football match scorelines can be a complex task that involves analyzi
 - Customizable dataset
 - Hyperparameter tuning with GridSearchCV
 - Data preprocessing with pipelines
+
+## Versioning
+
+For this project, [semantic versioning](https://semver.org/) will be used. Right now I am planning to keep this project under alpha for the European Championship and promote the project to beta for the coming season. Hopefully the project will have advanced far enough after this season to release version 1
 
 ## Installation
 
@@ -48,6 +53,24 @@ cd Football-match-predictions
 3. Ensure all dependencies are installed:
 ```bash
 pip install -r requirements.txt
+```
+
+4. Navigate to the directory with the correct files:
+```bash
+cd "Footbal match predictions"
+```
+
+- If you want to make predictions:
+```bash
+python Predictions.py
+```
+- If you want to add results:
+```bash
+python Results.py
+```
+- If you want to create an accuracy table:
+```bash
+python Accuracy.py
 ```
 
 ## Contributing
