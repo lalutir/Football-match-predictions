@@ -1,12 +1,3 @@
----
-name: Pull request
-about: ''
-title: ''
-labels: ''
-assignees: ''
-
----
-
 ## Pull Request Description
 
 <!-- Please provide a brief description of the changes in this PR -->
@@ -20,7 +11,7 @@ If there are no related issues, you can remove this section.
 
 ## Checklist
 
-- [ ] I have read the CONTRIBUTING.md document.
+- [ ] I have read the [CONTRIBUTING.md](CONTRIBUTING.md) document.
 - [ ] My code follows the code style of this project.
 - [ ] I have tested my changes and confirmed they work as expected.
 - [ ] I have added necessary documentation (if applicable).
