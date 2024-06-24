@@ -17,15 +17,12 @@ Welcome to the Football Match Scoreline Predictor! This project aims to predict 
 
 ## Introduction
 
-Predicting football match scorelines can be a complex task that involves analyzing various factors and data points. This project uses a Random Forest Regressor model, along with a pipeline for preprocessing and hyperparameter tuning, to provide scoreline predictions.
-
+Predicting football match scorelines can be a complex task that involves analyzing various factors and data points. This project uses a LinearRegression model.
 ## Features
 
 - Predict football match scorelines
 - Customizable dataset
-- Hyperparameter tuning with GridSearchCV
-- Data preprocessing with pipelines
-
+  
 ## Versioning
 
 For this project, [semantic versioning](https://semver.org/) will be used. Right now I am planning to keep this project under alpha for the European Championship and promote the project to beta for the coming season. Hopefully the project will have advanced far enough after this season to release version 1
