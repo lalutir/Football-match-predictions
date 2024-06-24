@@ -1,10 +1,9 @@
 import pandas as pd
 import numpy as np
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
 from sklearn.preprocessing import StandardScaler
-from sklearn.compose import ColumnTransformer
 import warnings
 import os
 import datetime
@@ -126,14 +125,21 @@ to_predict_away = pd.DataFrame(to_predict_away_dict, index=[0])
 df1 = pd.concat([df1, to_predict_home]).reset_index(drop=True)
 df2 = pd.concat([df2, to_predict_away]).reset_index(drop=True)
 
+# Scale the data
+scaler = StandardScaler()
+col_to_scale = ['Defenders', 'Midfielders', 'Attackers', 'Opponent ranking', 'Opponent ranking points', 'Opponent defenders', 'Opponent midfielders', 'Opponent attackers', 'Avg goals', 'Avg opponent goals']
+
+df1[col_to_scale] = scaler.fit_transform(df1[col_to_scale])
+df2[col_to_scale] = scaler.fit_transform(df2[col_to_scale])
+
 # Create the pipeline
 pipeline = Pipeline([
-    ('regressor', RandomForestRegressor(random_state=42))
+    ('regressor', LinearRegression())
 ])
 
-# Define the hyperparameters
+# Define the hyperparameters (LinearRegression doesn't have any hyperparameters)
 param_grid = {
-    'regressor__n_estimators': range(0, 1001, 100)
+    # LinearRegression doesn't have any relevant hyperparameters for grid search
 }
 
 # Perform the grid search
@@ -144,13 +150,6 @@ grid_search = GridSearchCV(
     scoring='neg_mean_squared_error',
     n_jobs=-1
 )
-
-# Scale the data
-scaler = StandardScaler()
-col_to_scale = ['Defenders', 'Midfielders', 'Attackers', 'Opponent ranking', 'Opponent ranking points', 'Opponent defenders', 'Opponent midfielders', 'Opponent attackers', 'Avg goals', 'Avg opponent goals']
-
-df1[col_to_scale] = scaler.fit_transform(df1[col_to_scale])
-df2[col_to_scale] = scaler.fit_transform(df2[col_to_scale])
 
 # Split the data
 X_1 = df1.drop(['Opponent', 'Goals', 'Opponent goals'], axis=1)
@@ -208,6 +207,11 @@ best_model_4 = grid_search.best_estimator_
 pred_home_goal = int(round((best_model_1.predict(X_1_train)[0] + best_model_4.predict(X_2_train)[0]) / 2, 0)) # type: ignore
 pred_away_goal = int(round((best_model_2.predict(X_1_train)[0] + best_model_3.predict(X_2_train)[0]) / 2, 0)) # type: ignore
 
+if pred_home_goal < 0:
+    pred_home_goal = 0
+if pred_away_goal < 0:
+    pred_away_goal = 0
+    
 # Update the predictions
 i = pred[(pred['Home'] == home_team) & (pred['Away'] == away_team) & (pred['Predicted home goals'].isna()) & (pred['Predicted away goals'].isna())].index
 
