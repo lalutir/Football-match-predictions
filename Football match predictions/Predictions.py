@@ -14,25 +14,6 @@ timestamp = str(datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S'))
 # Hide warnings
 warnings.filterwarnings('ignore')
 
-# Check if the files are present and not open
-try:
-    os.rename('Statistics/Country statistics.xlsx', 'Statistics/Country statistics.xlsx')
-except FileNotFoundError:
-    raise FileNotFoundError('Country statistics.xlsx not found. Please make sure the file is in the correct directory.')
-except PermissionError:
-    raise PermissionError('Country statistics.xlsx is currently open. Please close the file before running the script.')
-except Exception as e:
-    raise Exception(e)
-
-try:
-    os.rename('Predictions/Predictions.xlsx', 'Predictions/Predictions.xlsx')
-except FileNotFoundError:
-    raise FileNotFoundError('Predictions.xlsx not found. Please make sure the file is in the correct directory.')
-except PermissionError:
-    raise PermissionError('Predictions.xlsx is currently open. Please close the file before running the script.')
-except Exception as e:
-    raise Exception(e)
-
 # Choose the home and away team
 home_team = input("Enter the home team: ")
 away_team = input("Enter the away team: ")
@@ -58,10 +39,12 @@ def find_last_created_file(directory):
 directory_path = 'Predictions/'
 last_file = find_last_created_file(directory_path)
 pred = pd.read_excel(last_file)
-directory_path = 'Statistics/'
-last_file = find_last_created_file(directory_path)
-rankings = pd.read_excel(last_file, sheet_name='Rankings')
 teams = list(pred['Home'].unique()) + list(pred['Away'].unique())
+rankings = pd.read_csv('Statistics/National Teams/Rankings.csv')
+nt = list(rankings['country_full'].unique())
+if home_team in nt and away_team in nt:
+    df1 = pd.read_csv(f'Statistics/National Teams/{home_team}.csv')
+    df2 = pd.read_csv(f'Statistics/National Teams/{away_team}.csv')
 
 # Check if the game has already been played
 if home_team not in rankings and away_team not in teams:
@@ -72,9 +55,6 @@ elif away_team not in teams:
     raise ValueError('The away team has an invalid name')
 elif list(pred[(pred['Home'] == home_team) & (pred['Away'] == away_team) & (pred['Predicted home goals'].isna()) & (pred['Predicted away goals'].isna())].index) == []:
     raise ValueError('This game has already been predicted or does not exist')
-
-df1 = pd.read_excel(last_file, sheet_name=home_team).drop(['Index'], axis=1)
-df2 = pd.read_excel(last_file, sheet_name=away_team).drop(['Index'], axis=1)
 
 # Ask for the amount of players in each position
 to_predict_home_defenders = int(input('Home defenders: '))
@@ -99,8 +79,8 @@ to_predict_home_dict = {'Home': 1,
                         'Goals': None,
                         'Opponent goals': None,
                         'Competitive': to_predict_home_competitive,
-                        'Avg goals': df1.iloc[-6:-2]['Goals'].mean(),
-                        'Avg opponent goals': df1.iloc[-6:-2]['Opponent goals'].mean()}
+                        'Avg goals': df1.iloc[-6:-1]['Goals'].mean(),
+                        'Avg opponent goals': df1.iloc[-6:-1]['Opponent goals'].mean()}
 
 to_predict_away_dict = {'Home': 0,
                         'Defenders': to_predict_home_opponent_defenders,
@@ -115,8 +95,8 @@ to_predict_away_dict = {'Home': 0,
                         'Goals': None,
                         'Opponent goals': None,
                         'Competitive': to_predict_home_competitive,
-                        'Avg goals': df2.iloc[-6:-2]['Goals'].mean(),
-                        'Avg opponent goals': df2.iloc[-6:-2]['Opponent goals'].mean()}
+                        'Avg goals': df2.iloc[-6:-1]['Goals'].mean(),
+                        'Avg opponent goals': df2.iloc[-6:-1]['Opponent goals'].mean()}
 
 to_predict_home = pd.DataFrame(to_predict_home_dict, index=[0])
 to_predict_away = pd.DataFrame(to_predict_away_dict, index=[0])
@@ -211,7 +191,7 @@ if pred_home_goal < 0:
     pred_home_goal = 0
 if pred_away_goal < 0:
     pred_away_goal = 0
-    
+
 # Update the predictions
 i = pred[(pred['Home'] == home_team) & (pred['Away'] == away_team) & (pred['Predicted home goals'].isna()) & (pred['Predicted away goals'].isna())].index
 
