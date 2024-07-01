@@ -14,25 +14,6 @@ timestamp = str(datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S'))
 # Hide warnings
 warnings.filterwarnings('ignore')
 
-# Check if the files are present and not open
-try:
-    os.rename('Statistics/Country statistics.xlsx', 'Statistics/Country statistics.xlsx')
-except FileNotFoundError:
-    raise FileNotFoundError('Country statistics.xlsx not found. Please make sure the file is in the correct directory.')
-except PermissionError:
-    raise PermissionError('Country statistics.xlsx is currently open. Please close the file before running the script.')
-except Exception as e:
-    raise Exception(e)
-
-try:
-    os.rename('Predictions/Predictions.xlsx', 'Predictions/Predictions.xlsx')
-except FileNotFoundError:
-    raise FileNotFoundError('Predictions.xlsx not found. Please make sure the file is in the correct directory.')
-except PermissionError:
-    raise PermissionError('Predictions.xlsx is currently open. Please close the file before running the script.')
-except Exception as e:
-    raise Exception(e)
-
 # Choose the home and away team
 home_team = input("Enter the home team: ")
 away_team = input("Enter the away team: ")
@@ -58,10 +39,12 @@ def find_last_created_file(directory):
 directory_path = 'Predictions/'
 last_file = find_last_created_file(directory_path)
 pred = pd.read_excel(last_file)
-directory_path = 'Statistics/'
-last_file = find_last_created_file(directory_path)
-rankings = pd.read_excel(last_file, sheet_name='Rankings')
 teams = list(pred['Home'].unique()) + list(pred['Away'].unique())
+rankings = pd.read_csv('Statistics/National Teams/Rankings.csv')
+nt = list(rankings['country_full'].unique())
+if home_team in nt and away_team in nt:
+    df1 = pd.read_csv(f'Statistics/National Teams/{home_team}.csv')
+    df2 = pd.read_csv(f'Statistics/National Teams/{away_team}.csv')
 
 # Check if the game has already been played
 if home_team not in rankings and away_team not in teams:
