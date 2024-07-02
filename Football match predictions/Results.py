@@ -100,8 +100,8 @@ home_team_df = pd.concat([home_team_df, home_team_add]).reset_index(drop=True)
 away_team_add = pd.DataFrame(away_dict, index=[0])
 away_team_df = pd.concat([away_team_df, away_team_add]).reset_index(drop=True)
 
-home_team_df.to_csv(f'Statistics/National Teams/{home_team}_TEST.csv', index=False)
-away_team_df.to_csv(f'Statistics/National Teams/{away_team}_TEST.csv', index=False)
+home_team_df.to_csv(f'Statistics/National Teams/{home_team}.csv', index=False)
+away_team_df.to_csv(f'Statistics/National Teams/{away_team}.csv', index=False)
 
 # Update the predictions
 i = pred[(pred['Home'] == home_team) & (pred['Away'] == away_team) & (pred['Actual home goals'].isna()) & (pred['Actual away goals'].isna())].index
