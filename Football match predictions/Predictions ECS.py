@@ -56,9 +56,6 @@ elif away_team not in teams:
 elif list(pred[(pred['Home'] == home_team) & (pred['Away'] == away_team) & (pred['Predicted home goals'].isna()) & (pred['Predicted away goals'].isna())].index) == []:
     raise ValueError('This game has already been predicted or does not exist')
 
-df1 = pd.read_excel(last_file, sheet_name=home_team).drop(['Index'], axis=1)
-df2 = pd.read_excel(last_file, sheet_name=away_team).drop(['Index'], axis=1)
-
 # Ask for the amount of players in each position
 to_predict_home_defenders = df1.iloc[-1]['Defenders']
 to_predict_home_midfielders = df1.iloc[-1]['Midfielders']
